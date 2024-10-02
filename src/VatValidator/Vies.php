@@ -2,9 +2,9 @@
 
 namespace Davidvandertuijn\VatValidator;
 
-use Exception;
 use Davidvandertuijn\VatValidator\Vies\Client as ViesClient;
 use Davidvandertuijn\VatValidator\Vies\Exceptions\Timeout as ViesTimeoutException;
+use Exception;
 use SoapFault;
 use stdClass;
 
@@ -13,29 +13,29 @@ class Vies
     /**
      * @var ViesClient
      */
-    protected $oViesClient = null;
+    protected $viesClient = null;
 
     /**
      * @var bool
      */
-    protected $bValid = false;
+    protected $valid = false;
 
     /**
      * @var bool
      */
-    protected $bStrict = true;
+    protected $strict = true;
 
     /**
      * @var string
      */
-    protected $sName = '';
+    protected $name = '';
 
     /**
      * @var string
      */
-    protected $sAddress = '';
+    protected $address = '';
 
-    const WSDL_URL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
+    public const WSDL_URL = 'http://ec.europa.eu/taxation_customs/vies/checkVatService.wsdl';
 
     /**
      * Construct.
@@ -45,12 +45,12 @@ class Vies
         ini_set('default_socket_timeout', 3);
         ini_set('max_execution_time', 30);
 
-        $oViesClient = new ViesClient(self::WSDL_URL, [
+        $viesClient = new ViesClient(self::WSDL_URL, [
             'connection_timeout' => 3,
-            'exceptions'         => true,
+            'exceptions' => true,
         ]);
 
-        $this->setViesClient($oViesClient);
+        $this->setViesClient($viesClient);
     }
 
     /**
@@ -58,15 +58,15 @@ class Vies
      */
     private function getViesClient(): ViesClient
     {
-        return $this->oViesClient;
+        return $this->viesClient;
     }
 
     /**
      * Set Vies Client.
      */
-    private function setViesClient(ViesClient $oViesClient): void
+    private function setViesClient(ViesClient $viesClient): void
     {
-        $this->oViesClient = $oViesClient;
+        $this->viesClient = $viesClient;
     }
 
     /**
@@ -74,15 +74,15 @@ class Vies
      */
     public function getName(): string
     {
-        return $this->sName;
+        return $this->name;
     }
 
     /**
      * Set Name.
      */
-    private function setName(string $sName): void
+    private function setName(string $name): void
     {
-        $this->sName = $sName;
+        $this->name = $name;
     }
 
     /**
@@ -90,15 +90,15 @@ class Vies
      */
     public function getAddress(): string
     {
-        return $this->sAddress;
+        return $this->address;
     }
 
     /**
      * Set Address.
      */
-    private function setAddress(string $sAddress): void
+    private function setAddress(string $address): void
     {
-        $this->sAddress = $sAddress;
+        $this->address = $address;
     }
 
     /**
@@ -106,15 +106,15 @@ class Vies
      */
     private function getValid(): bool
     {
-        return $this->bValid;
+        return $this->valid;
     }
 
     /**
      * Set Valid.
      */
-    private function setValid(bool $bValid): void
+    private function setValid(bool $valid): void
     {
-        $this->bValid = $bValid;
+        $this->valid = $valid;
     }
 
     /**
@@ -122,15 +122,15 @@ class Vies
      */
     public function getStrict(): bool
     {
-        return $this->bStrict;
+        return $this->strict;
     }
 
     /**
      * Set Strict.
      */
-    public function setStrict(bool $bStrict): void
+    public function setStrict(bool $strict): void
     {
-        $this->bStrict = $bStrict;
+        $this->strict = $strict;
     }
 
     /**
@@ -146,7 +146,7 @@ class Vies
      */
     public function validate(string $sVatNumber): bool
     {
-        if (!$this->checkVat($sVatNumber)) {
+        if (! $this->checkVat($sVatNumber)) {
             return false;
         }
 
@@ -159,14 +159,14 @@ class Vies
     private function checkVat(string $sVatNumber): bool
     {
         try {
-            $oViesClient = $this->getViesClient();
+            $viesClient = $this->getViesClient();
 
-            $oResponse = $oViesClient->checkVat([
+            $response = $viesClient->checkVat([
                 'countryCode' => substr($sVatNumber, 0, 2),
-                'vatNumber'   => substr($sVatNumber, 2, strlen($sVatNumber) - 2),
+                'vatNumber' => substr($sVatNumber, 2, strlen($sVatNumber) - 2),
             ]);
 
-            if (!$oResponse->valid) {
+            if (! $response->valid) {
                 $this->setValid(false);
 
                 return false;
@@ -174,11 +174,11 @@ class Vies
 
             $this->setValid(true);
 
-            $this->checkVatResponse($oResponse);
+            $this->checkVatResponse($response);
 
             return true;
         } catch (ViesTimeoutException $e) {
-            if (!$this->getStrict()) {
+            if (! $this->getStrict()) {
                 $this->setValid(true);
 
                 return true;
@@ -188,7 +188,7 @@ class Vies
 
             return false;
         } catch (SoapFault $e) {
-            if (!$this->getStrict()) {
+            if (! $this->getStrict()) {
                 $this->setValid(true);
 
                 return true;
@@ -201,12 +201,12 @@ class Vies
     /**
      * Check Vat Response.
      */
-    private function checkVatResponse(stdClass $oResponse): void
+    private function checkVatResponse(stdClass $response): void
     {
-        $sName = (string) $oResponse->name;
-        $this->setName($sName);
+        $name = (string) $response->name;
+        $this->setName($name);
 
-        $sAddress = (string) $oResponse->address;
-        $this->setAddress($sAddress);
+        $address = (string) $response->address;
+        $this->setAddress($address);
     }
 }

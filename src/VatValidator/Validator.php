@@ -7,32 +7,32 @@ class Validator
     /**
      * @var array
      */
-    protected $aMetaData = [];
+    protected $metaData = [];
 
     /**
      * @var bool
      */
-    protected $bValid = false;
+    protected $valid = false;
 
     /**
      * @var bool
      */
-    protected $bStrict = true;
+    protected $strict = true;
 
     /**
      * Get Meta Data.
      */
     public function getMetaData(): array
     {
-        return $this->aMetaData;
+        return $this->metaData;
     }
 
     /**
      * Set Meta Data.
      */
-    private function setMetaData(array $aMetaData): void
+    private function setMetaData(array $metaData): void
     {
-        $this->aMetaData = $aMetaData;
+        $this->metaData = $metaData;
     }
 
     /**
@@ -40,15 +40,15 @@ class Validator
      */
     private function getValid(): bool
     {
-        return $this->bValid;
+        return $this->valid;
     }
 
     /**
      * Set Valid.
      */
-    private function setValid(bool $bValid): void
+    private function setValid(bool $valid): void
     {
-        $this->bValid = $bValid;
+        $this->valid = $valid;
     }
 
     /**
@@ -56,15 +56,15 @@ class Validator
      */
     public function getStrict(): bool
     {
-        return $this->bStrict;
+        return $this->strict;
     }
 
     /**
      * Set Strict.
      */
-    public function setStrict(bool $bStrict): void
+    public function setStrict(bool $strict): void
     {
-        $this->bStrict = $bStrict;
+        $this->strict = $strict;
     }
 
     /**
@@ -78,41 +78,41 @@ class Validator
     /**
      * Validate.
      */
-    public function validate(string $sVatNumber): bool
+    public function validate(string $vatNumber): bool
     {
-        $sPattern = '/^(AT|BE|BG|CHE|CY|CZ|DE|DK|EE|EL|ES|EU|FI|FR|GB|GR|HR|HU|IE|IT|LT|LU|LV|MT|NL|NO|PL|PT|RO|RS|SE|SI|SK)[A-Z0-9]{6,20}$/';
+        $pattern = '/^(AT|BE|BG|CHE|CY|CZ|DE|DK|EE|EL|ES|EU|FI|FR|GB|GR|HR|HU|IE|IT|LT|LU|LV|MT|NL|NO|PL|PT|RO|RS|SE|SI|SK)[A-Z0-9]{6,20}$/';
 
-        $sVatNumber = strtoupper($sVatNumber);
+        $vatNumber = strtoupper($vatNumber);
 
-        if (!preg_match($sPattern, $sVatNumber)) {
+        if (! preg_match($pattern, $vatNumber)) {
             $this->setValid(false);
 
             return false;
         }
 
-        if (!self::check($sVatNumber)) {
+        if (! self::check($vatNumber)) {
             $this->setValid(false);
 
             return false;
         }
 
-        $oVies = new Vies();
+        $vies = new Vies();
 
-        $bStrict = $this->getStrict();
-        $oVies->setStrict($bStrict);
+        $strict = $this->getStrict();
+        $vies->setStrict($strict);
 
-        if (!$oVies->validate($sVatNumber)) {
+        if (! $vies->validate($vatNumber)) {
             $this->setValid(false);
 
             return false;
         }
 
-        $aMetaData = [
-            'name'    => $oVies->getName(),
-            'address' => $oVies->getAddress(),
+        $metaData = [
+            'name' => $vies->getName(),
+            'address' => $vies->getAddress(),
         ];
 
-        $this->setMetaData($aMetaData);
+        $this->setMetaData($metaData);
 
         $this->setValid(true);
 
@@ -122,88 +122,88 @@ class Validator
     /**
      * Check.
      */
-    private static function check(string $sVatNumber): bool
+    private static function check(string $vatNumber): bool
     {
-        $sCountryCode = substr($sVatNumber, 0, 2);
+        $countryCode = substr($vatNumber, 0, 2);
 
-        switch ($sCountryCode) {
+        switch ($countryCode) {
             case 'AT': // Oostenrijk
-                return (bool) preg_match('/^(AT)U(\d{8})$/', $sVatNumber);
+                return (bool) preg_match('/^(AT)U(\d{8})$/', $vatNumber);
             case 'BE': // België
-                return (bool) preg_match('/(BE)(0?\d{9})$/', $sVatNumber);
+                return (bool) preg_match('/(BE)(0?\d{9})$/', $vatNumber);
             case 'BG': // Bulgarije
-                return (bool) preg_match('/(BG)(\d{9,10})$/', $sVatNumber);
+                return (bool) preg_match('/(BG)(\d{9,10})$/', $vatNumber);
             case 'CHE': // Zwitserland
-                return (bool) preg_match('/(CHE)(\d{9})(MWST)?$/', $sVatNumber);
+                return (bool) preg_match('/(CHE)(\d{9})(MWST)?$/', $vatNumber);
             case 'CY': // Cyprus
-                return (bool) preg_match('/^(CY)([0-5|9]\d{7}[A-Z])$/', $sVatNumber);
+                return (bool) preg_match('/^(CY)([0-5|9]\d{7}[A-Z])$/', $vatNumber);
             case 'CZ': // Tsjechië
-                return (bool) preg_match('/^(CZ)(\d{8,10})(\d{3})?$/', $sVatNumber);
+                return (bool) preg_match('/^(CZ)(\d{8,10})(\d{3})?$/', $vatNumber);
             case 'DE': // Duitsland
-                return (bool) preg_match('/^(DE)([1-9]\d{8})/', $sVatNumber);
+                return (bool) preg_match('/^(DE)([1-9]\d{8})/', $vatNumber);
             case 'DK': // Denemarken
-                return (bool) preg_match('/^(DK)(\d{8})$/', $sVatNumber);
+                return (bool) preg_match('/^(DK)(\d{8})$/', $vatNumber);
             case 'EE': // Estland
-                return (bool) preg_match('/^(EE)(10\d{7})$/', $sVatNumber);
+                return (bool) preg_match('/^(EE)(10\d{7})$/', $vatNumber);
             case 'EL': // Griekenland
-                return (bool) preg_match('/^(EL)(\d{9})$/', $sVatNumber);
+                return (bool) preg_match('/^(EL)(\d{9})$/', $vatNumber);
             case 'ES': // Spanje
-                return preg_match('/^(ES)([A-Z]\d{8})$/', $sVatNumber)
-                    || preg_match('/^(ES)([A-H|N-S|W]\d{7}[A-J])$/', $sVatNumber)
-                    || preg_match('/^(ES)([0-9|Y|Z]\d{7}[A-Z])$/', $sVatNumber)
-                    || preg_match('/^(ES)([K|L|M|X]\d{7}[A-Z])$/', $sVatNumber);
+                return preg_match('/^(ES)([A-Z]\d{8})$/', $vatNumber)
+                    || preg_match('/^(ES)([A-H|N-S|W]\d{7}[A-J])$/', $vatNumber)
+                    || preg_match('/^(ES)([0-9|Y|Z]\d{7}[A-Z])$/', $vatNumber)
+                    || preg_match('/^(ES)([K|L|M|X]\d{7}[A-Z])$/', $vatNumber);
             case 'EU':
-                return (bool) preg_match('/^(EU)(\d{9})$/', $sVatNumber);
+                return (bool) preg_match('/^(EU)(\d{9})$/', $vatNumber);
             case 'FI': // Finland
-                return (bool) preg_match('/^(FI)(\d{8})$/', $sVatNumber);
+                return (bool) preg_match('/^(FI)(\d{8})$/', $vatNumber);
             case 'FR': // Frankrijk
-                return preg_match('/^(FR)(\d{11})$/', $sVatNumber)
-                    || preg_match('/^(FR)([(A-H)|(J-N)|(P-Z)]\d{10})$/', $sVatNumber)
-                    || preg_match('/^(FR)(\d[(A-H)|(J-N)|(P-Z)]\d{9})$/', $sVatNumber)
-                    || preg_match('/^(FR)([(A-H)|(J-N)|(P-Z)]{2}\d{9})$/', $sVatNumber);
+                return preg_match('/^(FR)(\d{11})$/', $vatNumber)
+                    || preg_match('/^(FR)([(A-H)|(J-N)|(P-Z)]\d{10})$/', $vatNumber)
+                    || preg_match('/^(FR)(\d[(A-H)|(J-N)|(P-Z)]\d{9})$/', $vatNumber)
+                    || preg_match('/^(FR)([(A-H)|(J-N)|(P-Z)]{2}\d{9})$/', $vatNumber);
             case 'GB': // Verenigd Koninkrijk
-                return preg_match('/^(GB)?(\d{9})$/', $sVatNumber)
-                    || preg_match('/^(GB)?(\d{12})$/', $sVatNumber)
-                    || preg_match('/^(GB)?(GD\d{3})$/', $sVatNumber)
-                    || preg_match('/^(GB)?(HA\d{3})$/', $sVatNumber);
+                return preg_match('/^(GB)?(\d{9})$/', $vatNumber)
+                    || preg_match('/^(GB)?(\d{12})$/', $vatNumber)
+                    || preg_match('/^(GB)?(GD\d{3})$/', $vatNumber)
+                    || preg_match('/^(GB)?(HA\d{3})$/', $vatNumber);
             case 'GR': // Griekenland
-                return (bool) preg_match('/^(GR)(\d{8,9})$/', $sVatNumber);
+                return (bool) preg_match('/^(GR)(\d{8,9})$/', $vatNumber);
             case 'HR': // Kroatië
-                return (bool) preg_match('/^(HR)(\d{11})$/', $sVatNumber);
+                return (bool) preg_match('/^(HR)(\d{11})$/', $vatNumber);
             case 'HU': // Hongarije
-                return (bool) preg_match('/^(HU)(\d{8})$/', $sVatNumber);
+                return (bool) preg_match('/^(HU)(\d{8})$/', $vatNumber);
             case 'IE': // Ierland
-                return preg_match('/^(IE)(\d{7}[A-W])$/', $sVatNumber)
-                    || preg_match('/^(IE)([7-9][A-Z\*\+)]\d{5}[A-W])$/', $sVatNumber)
-                    || preg_match('/^(IE)(\d{7}[A-W][AH])$/', $sVatNumber);
+                return preg_match('/^(IE)(\d{7}[A-W])$/', $vatNumber)
+                    || preg_match('/^(IE)([7-9][A-Z\*\+)]\d{5}[A-W])$/', $vatNumber)
+                    || preg_match('/^(IE)(\d{7}[A-W][AH])$/', $vatNumber);
             case 'IT': // Italië
-                return (bool) preg_match('/^(IT)(\d{11})$/', $sVatNumber);
+                return (bool) preg_match('/^(IT)(\d{11})$/', $vatNumber);
             case 'LT': // Litouwen
-                return (bool) preg_match('/^(LT)(\d{9}|\d{12})$/', $sVatNumber);
+                return (bool) preg_match('/^(LT)(\d{9}|\d{12})$/', $vatNumber);
             case 'LU': // Luxemburg
-                return (bool) preg_match('/^(LU)(\d{8})$/', $sVatNumber);
+                return (bool) preg_match('/^(LU)(\d{8})$/', $vatNumber);
             case 'LV': // Letland
-                return (bool) preg_match('/^(LV)(\d{11})$/', $sVatNumber);
+                return (bool) preg_match('/^(LV)(\d{11})$/', $vatNumber);
             case 'MT': // Malta
-                return (bool) preg_match('/^(MT)([1-9]\d{7})$/', $sVatNumber);
+                return (bool) preg_match('/^(MT)([1-9]\d{7})$/', $vatNumber);
             case 'NL': // Nederland
-                return (bool) preg_match('/^(NL)(\d{9})B\d{2}$/', $sVatNumber);
+                return (bool) preg_match('/^(NL)(\d{9})B\d{2}$/', $vatNumber);
             case 'NO': // Norwegen
-                return (bool) preg_match('/^(NO)(\d{9})$/', $sVatNumber);
+                return (bool) preg_match('/^(NO)(\d{9})$/', $vatNumber);
             case 'PL': // Polen
-                return (bool) preg_match('/^(PL)(\d{10})$/', $sVatNumber);
+                return (bool) preg_match('/^(PL)(\d{10})$/', $vatNumber);
             case 'PT': // Portugal
-                return(bool) preg_match('/^(PT)(\d{9})$/', $sVatNumber);
+                return (bool) preg_match('/^(PT)(\d{9})$/', $vatNumber);
             case 'RO': // Roemenië
-                return (bool) preg_match('/^(RO)([1-9]\d{1,9})$/', $sVatNumber);
+                return (bool) preg_match('/^(RO)([1-9]\d{1,9})$/', $vatNumber);
             case 'RS': // Servië
-                return (bool) preg_match('/^(RS)(\d{9})$/', $sVatNumber);
+                return (bool) preg_match('/^(RS)(\d{9})$/', $vatNumber);
             case 'SE': // Zweden
-                return (bool) preg_match('/^(SE)(\d{10}01)$/', $sVatNumber);
+                return (bool) preg_match('/^(SE)(\d{10}01)$/', $vatNumber);
             case 'SI': // Slovenië
-                return (bool) preg_match('/^(SI)([1-9]\d{7})$/', $sVatNumber);
+                return (bool) preg_match('/^(SI)([1-9]\d{7})$/', $vatNumber);
             case 'SK': // Slowakije
-                return (bool) preg_match('/^(SK)([1-9]\d[(2-4)|(6-9)]\d{7})$/', $sVatNumber);
+                return (bool) preg_match('/^(SK)([1-9]\d[(2-4)|(6-9)]\d{7})$/', $vatNumber);
             default:
                 return false;
         }

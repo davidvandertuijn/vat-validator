@@ -12,7 +12,7 @@ This VAT Number Validation library allows users to verify VAT numbers with high 
 
 ## Install
 
-```
+```shell
 composer require davidvandertuijn/vat-validator
 ```
 
@@ -22,28 +22,28 @@ composer require davidvandertuijn/vat-validator
 use Davidvandertuijn\VatValidator\Validator as VatValidator;
 ```
 
-```
+```php
 $vatValidator = new VatValidator;
 
 $vatValidator->validate('NL821783981B01'); // true
 
 if ($vatValidator->isValid()) {
-    $aMetaData = $vatValidator->getMetaData();
-    
-    /*
-    [
-        "name" => "FLORO WEBDEVELOPMENT B.V.",
-        "address" => "WESTBLAAK 00180 3012KN ROTTERDAM"
-    ]
-    */
+    $metaData = $vatValidator->getMetaData();
 }
+```
+
+```php
+[
+    "name" => "FLORO WEBDEVELOPMENT B.V.",
+    "address" => "WESTBLAAK 00180 3012KN ROTTERDAM"
+]
 ```
 
 ## Strict
 
 In this VAT Number Validation library, when strict mode is set to FALSE, the validation process is more flexible, especially in scenarios where the VIES (VAT Information Exchange System) service is temporarily unavailable. In such cases, the validation will return TRUE, allowing the workflow to continue without disruption due to service timeouts or SOAP errors.
 
-```
+```php
 $vatValidator->setStrict(false); // default = true
 ```
 
