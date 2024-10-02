@@ -19,7 +19,7 @@ composer require davidvandertuijn/vat-validator
 ## Usage
 
 ```php
-use Davidvandertuijn\VatValildator\Validator as VatValidator;
+use Davidvandertuijn\VatValidator\Validator as VatValidator;
 ```
 
 ```
