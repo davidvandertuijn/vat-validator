@@ -42,7 +42,7 @@ class Client extends SoapClient
         curl_close($ch);
 
         if ($oneWay) {
-            return;
+            return null;
         }
 
         return $response;
