@@ -1,0 +1,20 @@
+{
+    "name": "davidvandertuijn/vat-validator",
+    "description": "VAT Validator",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "David van der Tuijn",
+            "email": "davidvandertuijn@mac.com"
+        }
+    ],
+    "require": {
+        "ext-curl" : "*",
+        "ext-soap" : "*",
+        "php": ">=7.0.0"
+    },
+    "autoload": {
+        "Davidvandertuijn\\": "src/"
+    }
+}
