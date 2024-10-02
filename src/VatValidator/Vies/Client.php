@@ -10,15 +10,8 @@ class Client extends SoapClient
 {
     /**
      * Do Request.
-     *
-     * @param string   $request The XML SOAP request.
-     * @param string   $location The URL to request.
-     * @param string   $action The SOAP action.
-     * @param int      $version The SOAP version.
-     * @param int|null $oneWay If one_way is set to 1, this method returns nothing. Use this where a response is not expected.
-     * @throws SoapFault|ViesTimeoutException
      */
-    public function __doRequest($request, $location, $action, $version, int $oneWay = null)
+    public function __doRequest(string $request, string $location, string $action, int $version, bool $oneWay = false): ?string
     {
         $ch = curl_init($location);
 
